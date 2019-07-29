@@ -1,0 +1,6 @@
+functions:
+  getToken:
+    handler:
+      code: src/getToken.ts
+    type: resolver
+    schema: src/getToken.graphql

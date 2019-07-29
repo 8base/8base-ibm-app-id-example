@@ -1,0 +1,11 @@
+{
+  "name": "8base-ibm-app-id-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1",
+    "jwt-decode": "^2.2.0",
+    "node-fetch": "^2.6.0",
+    "path": "^0.12.7"
+  }
+}
