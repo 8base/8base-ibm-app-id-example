@@ -1,41 +1,87 @@
-# 8base With Protected Routes App Example
+# React App With Protected Routes App Example
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Set up
 
-## Available Scripts
+```
+# Install dependencies
+npm install
 
-In the project directory, you can run:
+# Start development server
+npm run start
+```
 
-### `npm start`
+## Important concepts
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This application relies on the *AppProvider* component available in the `@8base/react-sdk` npm package. The *AppProvider* accepts an *authClient* and *uri* property, from which it is able to handle in app authentication flows. 
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+### URI
+`uri` is simply the endpoint of an 8base workspace. 
 
-### `npm test`
+### authClient (`openid-app/src/authClient.js`)
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The `authClient` is a JavaScript object that encapsulates any authentication and authorization logic. Each function handles a discrete respensibility for managing the auth lifecycle.
 
-### `npm run build`
+*Note: These following are controlled fully by the front-end developer. The choice of whether to use the AppProvider is completely up to them. Authentication and authorization can still be implimented using custom logic and components.*
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+##### authorize
+Load's the specified authentication page for the external provider.
+```javascript
+authorize: () => {
+  window.location.href = encodeURI(`${IBM_APP_ID_OAUTH_URL}/authorization?client_id=${IBM_APP_ID_CLIENT_ID}&scope=openid&response_type=code&redirect_uri=http://localhost:3000/auth`);
+}
+```
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+##### getAuthState
+Fetches the current auth state from the browsers `localStorage` object.
+```javascript
+getAuthState: () => {
+  const auth = JSON.parse(localStorage.getItem(AUTH_LOCALSTORAGE_KEY) || '{}');
+  return auth || {};
+}
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+##### setAuthState
+Updates the auth state in `localStorage` by merging it with an updated auth payload. 
+```javascript
+setAuthState: (newState) => {
+  const currentState = authClient.getAuthState();
 
-### `npm run eject`
+  const mergedState = {
+    ...currentState,
+    ...newState,
+  };
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  localStorage.setItem(AUTH_LOCALSTORAGE_KEY, JSON.stringify(mergedState));
+}
+````
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+##### purgeAuthState
+Delete auth state persisted in local storage while optionally forcing logout redirect.
+```javascript
+purgeAuthState: ({ withLogout }) => {
+  localStorage.removeItem(AUTH_LOCALSTORAGE_KEY);
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  if (withLogout) {
+    authClient.logout();
+  }
+}
+ ```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+##### logout
+Reloads application at root path.
+```javascript
+logout: () => {
+  window.location.href = '/';
+}
+```
 
+##### checkIsAuthorized
+Determines whether the current user is authorized based the existence of a token in `localStorage`.
+
+```javascript
+checkIsAuthorized: () => {
+  const { token } = authClient.getAuthState();
+
+  return token !== '' && token !== null && token !== undefined;
+}
+```
