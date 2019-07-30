@@ -19,9 +19,9 @@ This application relies on the *AppProvider* component available in the `@8base/
 
 ### authClient (`openid-app/src/authClient.js`)
 
-The `authClient` is a JavaScript object that encapsulates any authentication and authorization logic. Each function handles a discrete respensibility for managing the auth lifecycle.
+The `authClient` is a JavaScript object that encapsulates authentication and authorization logic. Each function handles a discrete respensibility for managing requirements of the auth lifecycle.
 
-*Note: These following are controlled fully by the front-end developer. The choice of whether to use the AppProvider is completely up to them. Authentication and authorization can still be implimented using custom logic and components.*
+*Note: The following functions are controlled fully by the front-end developer. The choice of whether to use the AppProvider is completely up to them. Authentication and authorization can still be implimented using custom logic and components.*
 
 ##### authorize
 Load's the specified authentication page for the external provider.
@@ -53,7 +53,7 @@ setAuthState: (newState) => {
 
   localStorage.setItem(AUTH_LOCALSTORAGE_KEY, JSON.stringify(mergedState));
 }
-````
+```
 
 ##### purgeAuthState
 Delete auth state persisted in local storage while optionally forcing logout redirect.
@@ -65,7 +65,7 @@ purgeAuthState: ({ withLogout }) => {
     authClient.logout();
   }
 }
- ```
+```
 
 ##### logout
 Reloads application at root path.
