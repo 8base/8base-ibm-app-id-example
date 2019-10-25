@@ -41,7 +41,7 @@ export default async (event: any, context: any) => {
   let email;
 
   try {
-    let tokenResponse = await fetch(`${IBM_APP_ID_URL}${IBM_APP_ID_TENANT_ID}/${TOKEN_PATH}`, {
+    let tokenResponse = await fetch(`${IBM_APP_ID_URL}/${IBM_APP_ID_TENANT_ID}/${TOKEN_PATH}`, {
       body,
       headers: {
         'Authorization': 'Basic ' + Buffer.from(`${IBM_APP_ID_CLIENT_ID}:${IBM_APP_ID_SECRET}`).toString('base64'),
@@ -56,7 +56,7 @@ export default async (event: any, context: any) => {
     try  {
       await context.api.gqlRequest(CURRENT_USER_QUERY, {}, {
         authorization: token,
-      }); 
+      });
     } catch (e) {
       ({ email } = jwtDecode(token));
 

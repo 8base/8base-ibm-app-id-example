@@ -1,5 +1,5 @@
 import React from 'react';
-import { gql } from '@8base/react-sdk';
+import { gql } from '8base-react-sdk';
 import { Query } from 'react-apollo';
 
 const CURRENT_USER_QUERY = gql`

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { gql, withAuth } from '@8base/react-sdk';
+import { gql, useAuth } from '8base-react-sdk';
 import { compose, withApollo } from 'react-apollo';
 import { Redirect } from 'react-router-dom';
 import qs from 'qs';
 
-import { AUTH_PROFILE_ID } from '../authClient';
+const AUTH_PROFILE_ID = 'cjyob0tyl00o601joamqx199q';
 
 const GET_TOKEN_MUTATION = gql`
   mutation GetToken($code: String!, $authProfileId: ID!) {
@@ -14,8 +14,9 @@ const GET_TOKEN_MUTATION = gql`
   }
 `;
 
-let Auth = ({ auth, client }) => {
+let Auth = ({ client }) => {
   const [authorising, setAuthorizing] = useState(true);
+  const { authClient } = useAuth();
 
   useEffect(() => {
     if (document.location.search.includes('code')) {
@@ -26,7 +27,7 @@ let Auth = ({ auth, client }) => {
 
         const token = tokenResponse.data.getToken.token;
 
-        await auth.setAuthState({
+        await authClient.setState({
           token,
         });
 
@@ -35,7 +36,7 @@ let Auth = ({ auth, client }) => {
 
       authorize();
     } else {
-      auth.authorize();
+      authClient.authorize();
 
       setAuthorizing(false);
     }
@@ -45,6 +46,6 @@ let Auth = ({ auth, client }) => {
   return authorising ? null : <Redirect to="/" />;
 };
 
-Auth = compose(withApollo, withAuth)(Auth);
+Auth = compose(withApollo)(Auth);
 
 export { Auth };
