@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
-import { withLogout, AuthContext } from '@8base/react-sdk';
+import { useAuth } from '8base-react-sdk';
 
 import { ProtectedRoute } from '../ProtectedRoute';
 import { Auth } from './auth';
 import { Public } from './public';
 import { Protected } from './protected';
 
-let Routes = ({ logout }) => {
-  const { isAuthorized, authorize } = useContext(AuthContext);
+const Routes = () => {
+  const { isAuthorized, authClient } = useAuth();
 
   return (
     <Switch>
@@ -19,9 +19,9 @@ let Routes = ({ logout }) => {
         {
           isAuthorized
           ?
-          <button type="button" onClick={() => logout()}>Logout</button>
+          <button type="button" onClick={() => authClient.logout()}>Logout</button>
           :
-          <button type="button" onClick={() => authorize()}>Login</button>
+          <button type="button" onClick={() => authClient.authorize()}>Login</button>
         }
         <Switch>
           <Route path="/public" component={Public} />
@@ -32,7 +32,5 @@ let Routes = ({ logout }) => {
     </Switch>
   );
 };
-
-Routes = withLogout(Routes);
 
 export { Routes };
